@@ -224,7 +224,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
                 ))}
               </div>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <button
                   onClick={() => setCurrentStep(2)}
                   className="px-6 py-3 border-2 border-gray-300 rounded-luxury text-black font-luxury-semibold hover:bg-gray-50 flex items-center"
@@ -232,14 +232,23 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
                   <ArrowLeft className="w-5 h-5 mr-2" />
                   Back
                 </button>
-                <button
-                  onClick={handleComplete}
-                  disabled={loading}
-                  className="btn-luxury-primary px-8 py-3 flex items-center disabled:opacity-50"
-                >
-                  {loading ? 'Setting up...' : 'Complete Setup'}
-                  <CheckCircle className="w-5 h-5 ml-2" />
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleComplete}
+                    disabled={loading}
+                    className="px-6 py-3 border-2 border-gray-300 rounded-luxury text-black font-luxury-semibold hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    {loading ? 'Setting up...' : 'Skip for Now'}
+                  </button>
+                  <button
+                    onClick={handleComplete}
+                    disabled={loading}
+                    className="btn-luxury-primary px-8 py-3 flex items-center disabled:opacity-50"
+                  >
+                    {loading ? 'Setting up...' : 'Complete Setup'}
+                    <CheckCircle className="w-5 h-5 ml-2" />
+                  </button>
+                </div>
               </div>
             </div>
           )}

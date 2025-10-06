@@ -84,8 +84,8 @@ export default function LocationPicker({
               value={latitude || ''}
               onChange={(e) => {
                 const lat = parseFloat(e.target.value);
-                if (!isNaN(lat) && longitude !== undefined) {
-                  onCoordinatesChange(lat, longitude);
+                if (!isNaN(lat)) {
+                  onCoordinatesChange(lat, longitude || 0);
                 }
               }}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -102,8 +102,8 @@ export default function LocationPicker({
               value={longitude || ''}
               onChange={(e) => {
                 const lng = parseFloat(e.target.value);
-                if (!isNaN(lng) && latitude !== undefined) {
-                  onCoordinatesChange(latitude, lng);
+                if (!isNaN(lng)) {
+                  onCoordinatesChange(latitude || 0, lng);
                 }
               }}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"

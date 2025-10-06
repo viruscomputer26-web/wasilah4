@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { 
-  User, 
-  signInWithEmailAndPassword, 
+import {
+  User,
+  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
   signOut,
   onAuthStateChanged,
-  updateProfile
+  updateProfile,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  updatePassword as firebaseUpdatePassword
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, googleProvider, facebookProvider, db } from '../config/firebase';
@@ -52,6 +55,9 @@ interface AuthContextType {
   logout: () => Promise<void>;
   continueAsGuest: () => void;
   logActivity: (action: string, page: string, details?: any) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
+  resendEmailVerification: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -115,6 +121,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signup = async (email: string, password: string, displayName: string, phone?: string) => {
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(user, { displayName });
+
+    // Send email verification
+    await sendEmailVerification(user);
+
     await createUserDocument(user, { phoneNumber: phone });
   };
 
@@ -156,18 +166,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const userRef = doc(db, 'users', currentUser.uid);
       const userSnap = await getDoc(userRef);
-      
+
       if (userSnap.exists()) {
         const currentData = userSnap.data() as UserData;
         const updatedActivityLog = [...(currentData.activityLog || []), activityLog];
-        
+
         await updateDoc(userRef, {
           activityLog: updatedActivityLog
         });
-        
+
         setUserData(prev => prev ? { ...prev, activityLog: updatedActivityLog } : null);
       }
     }
+  };
+
+  const resetPassword = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    if (!currentUser) throw new Error('No user logged in');
+    await firebaseUpdatePassword(currentUser, newPassword);
+  };
+
+  const resendEmailVerification = async () => {
+    if (!currentUser) throw new Error('No user logged in');
+    await sendEmailVerification(currentUser);
   };
 
   useEffect(() => {
@@ -207,7 +231,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loginWithFacebook,
     logout,
     continueAsGuest,
-    logActivity
+    logActivity,
+    resetPassword,
+    updatePassword,
+    resendEmailVerification
   };
 
   return (

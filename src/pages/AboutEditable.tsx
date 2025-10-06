@@ -141,9 +141,9 @@ const AboutEditable = () => {
   const header = headerData || defaultHeader;
   const mission = missionData || defaultMission;
   const vision = visionData || defaultVision;
-  const coreValues = values || defaultValues;
-  const whatWeDo = whatWeDoData || defaultWhatWeDo;
-  const teamMembers = team || defaultTeam;
+  const coreValues = (values && values.length > 0) ? values : defaultValues;
+  const whatWeDo = (whatWeDoData && whatWeDoData.length > 0) ? whatWeDoData : defaultWhatWeDo;
+  const teamMembers = (team && team.length > 0) ? team : defaultTeam;
   const impact = impactData || defaultImpact;
 
   return (

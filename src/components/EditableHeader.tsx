@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogOut, Settings } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, LogIn, Key } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useContent } from '../hooks/useContent';
 import AdminPanel from './AdminPanel';
 import ContentEditor from './ContentEditor';
 import EditButton from './EditButton';
+import AuthModal from './AuthModal';
 
 const EditableHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,6 +14,7 @@ const EditableHeader = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const location = useLocation();
   const { currentUser, userData, isGuest, isAdmin, logout } = useAuth();
 
@@ -133,6 +135,14 @@ const EditableHeader = () => {
                           Admin Panel
                         </button>
                       )}
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setShowUserMenu(false)}
+                        className="w-full text-left px-4 py-2 text-cream-elegant hover:bg-vibrant-orange/20 transition-colors flex items-center"
+                      >
+                        <User className="w-4 h-4 mr-3" />
+                        My Profile
+                      </Link>
                       <button
                         onClick={() => {
                           logout();
@@ -147,9 +157,13 @@ const EditableHeader = () => {
                   )}
                 </div>
               ) : isGuest ? (
-                <div className="text-cream-elegant font-luxury-body">
-                  <span className="text-sm opacity-75">Guest User</span>
-                </div>
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-vibrant-orange text-white rounded-luxury hover:bg-vibrant-orange-light transition-colors font-luxury-semibold"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Sign In</span>
+                </button>
               ) : null}
             </div>
 
@@ -202,6 +216,11 @@ const EditableHeader = () => {
         ]}
         initialData={header}
         onSave={(data) => saveHeader('main', data)}
+      />
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
       />
     </>
   );
